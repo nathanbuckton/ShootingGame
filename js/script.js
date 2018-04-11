@@ -3,21 +3,30 @@
         ctx = theCanvas.getContext('2d'),
         player = { x : 275, y : 550, width : 50, height : 50, lives : 3, speed : 7 },
         bullets = [],
+        mouseTracker = { x : theCanvas.width/2)},
+        enemy1 = document.querySelector('.enemyOne'),
+        enemy2 = document.querySelector('.enemyTwo'),
+        enemy3 = document.querySelector('.enemyThree'),
         boxes = [
-          { x : 30, y : 30, x1 : 30, y1 : 30, color : 'rgba(0, 0, 200, 0.5)', xspeed : 5, yspeed : 8},
-          { x : 90, y : 90, x1 : 40, y1 : 40, color : 'rgba(0, 200, 0, 0.5)', xspeed : 5, yspeed : 8},
-          { x : 150, y : 150, x1 : 30, y1 : 30, color : 'rgba(200, 0, 200, 0.5)', xspeed : 5, yspeed : 8},
-          { x : 45, y : 45, x1 : 55, y1 : 55, color : 'rgba(200, 0, 0, 0.5)', xspeed : 3, yspeed : 5},
-          { x : 120, y : 120, x1 : 20, y1 : 20, color : 'rgba(0, 200, 200, 0.5)', xspeed : 6, yspeed : 9}
+          { x : 30, y : 30, x1 : 30, y1 : 30, image : enemy1, xspeed : 5, yspeed : 8, points : 10},
+          { x : 90, y : 90, x1 : 40, y1 : 40, image : enemy2, xspeed : 5, yspeed : 8, points : 5},
+          { x : 150, y : 150, x1 : 30, y1 : 30, image : enemy3, xspeed : 5, yspeed : 8, points : 10},
         ],
         pauseButton = document.querySelector('.pause'),
         playButton = document.querySelector('.play'),
+        resetButton = document.querySelector('.reset'),
+        resetScreen = document.querySelector('.level-up')
         playerImg = document.querySelector('.ship');
 
       var playState = true;
+      score = 0;
 
   function draw() {
     ctx.clearRect(0, 0, theCanvas.width, theCanvas.height);
+    ctx.fillStyle = 'rgb(255, 255, 255)';
+    ctx.font = '18px sans-serif';
+    ctx.fillText(`Score: ${score}`, 500 , 20);
+
     ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
 
     bullets.forEach((bullet, index) => {
@@ -30,9 +39,13 @@
 
       boxes.forEach((box, index) =>{
         if (bullet.y <= (box.y + box.y1) && bullet.y > box.y && bullet.x > box.x && bullet.x < (box.x + box.x1)) {
-          delete boxes [index];
-          delete bullets[bulletIndex];
+          //delete boxes [index];
+        //  delete bullets[bulletIndex];
+        bullets.splice(bulletIndex, 1);
+        boxes.splice(index, 1);
 
+        score += box.points;
+        console.log(`score is nowL ${score}`);
 
           let boomsound = document.createElement('audio');
           boomsound.src = "assets/audio/explosion.mp3";
@@ -44,20 +57,24 @@
 
 
             boomsound.play();
-        
 
+            if (boxes.length == 0 ) {
+              console.log('level up!');
+              levelUp();
+            }
         }
       });
 
 
       if(bullet.y < 0) {
-        delete bullets[index];
+        //delete bullets[index];
+        bullets.splice(index, 1);
       }
     });
 
     boxes.forEach(box => {
       ctx.fillStyle = box.color;
-      ctx.fillRect(box.x, box.y, box.x1, box.y1);
+      ctx.drawImage(box.image, box.x, box.y, box.x1, box.y1);
 
       if (box.x + box.x1 > theCanvas.width) {
         box.xspeed *=-1;
@@ -101,7 +118,10 @@
 //  }
 
   function moveShip(e) {
-    player.x = e.clientX - theCanvas.offsetLeft;
+  //  player.x = e.clientX - theCanvas.offsetLeft;
+  mousPos = (e.clientX - theCanvas.offsetLeft) - player.width /2;
+
+  mouseTracker.x = e.clientX - theCanvas.offsetLeft;
   }
 
   function createBullet() {
@@ -134,6 +154,18 @@
     window.requestAnimationFrame(draw);
   }
 
+  function levelUp() {
+    //debugger;
+
+    playstate = false;
+    resetScreen.classList.add()
+
+  }
+
+function resetGame(){
+
+}
+
   //window.addEventListener('keydown', movePlayer);
   window.requestAnimationFrame(draw);
 
@@ -142,5 +174,7 @@
 
   pauseButton.addEventListener('click', pauseGame);
   playButton.addEventListener('click', playGame);
+
+  resetButton.addEventListener('click', resetGame);
 
 })();
